@@ -19,8 +19,6 @@ uint8_t _CS; // 3
 
 void setup() 
 {
-  Serial.begin(9600);
-
   initLCD(5, 4, 3);
   underlineCursorON();
   writeString((unsigned char*)"Newhaven");
@@ -31,38 +29,65 @@ void loop()
 
 }
 
+/**
+ * @brief Initialize selected IO ports, wait for the display to power ON,
+ * and clear the screen.
+ * 
+ * @param SCL Serial clock pin assignment.
+ * @param SDI Serial data pin assignment.
+ * @param CS Chip/Slave select pin assignment.
+ * @return none
+ */
 void initLCD(uint8_t SCL, uint8_t SDI, uint8_t CS)
 {
+  // Store pin assignments globally
   _SCL = SCL;
   _SDI = SDI;
   _CS = CS;
 
+  // Set IO modes
   pinMode(CS, OUTPUT);
   pinMode(SCL, OUTPUT);
   pinMode(SDI, OUTPUT);
 
+  // Set pin states
   digitalWrite(CS, HIGH);
   digitalWrite(SCL, HIGH);
 
+  // Wait for display to power ON.
   delay(500);
 
-  // Init
-  displayON();
   clearScreen();
 }
 
+/**
+ * @brief Set chip/slave select HIGH and wait for 1ms.
+ * 
+ * @return none
+ */
 void setCS()
 {
   digitalWrite(_CS, HIGH);
   delay(1);
 }
 
+/**
+ * @brief Clear chip/slave select and wait for 1ms.
+ * 
+ * @return none
+ */
 void clearCS()
 {
   digitalWrite(_CS, LOW);
   delay(1);
 }
 
+/**
+ * @brief Write 1 byte of data to the display.
+ * 
+ * @param data Byte of data to be written.
+ * @return none
+ */
 void write(uint8_t data)
 {
   clearCS();
@@ -70,18 +95,32 @@ void write(uint8_t data)
   setCS();
 }
 
+/**
+ * @brief Write an array of characters to the display.
+ * 
+ * @param data Pointer to the array of characters.
+ * @return none
+ */
 void writeString(unsigned char* data)
 {
+  // Iterate through data until null terminator is found.
   while(*data != '\0')
   {
     write(*data);
-    data++;
+    data++; // Increment pointer.
   }
 }
 
+/**
+ * @brief Put each bit of data on the data bus.
+ * This function sends MSB (D7) first and LSB (D0) last.
+ * 
+ * @param data Byte of data to be put on the data bus.
+ * @return none
+ */
 void putData(uint8_t data)
 {
-  // Write data byte
+  // Write data byte MSB first -> LSB last
   for(int i = 7; i >= 0; i--)
   {
     digitalWrite(_SCL, LOW);
@@ -93,41 +132,82 @@ void putData(uint8_t data)
   }
 }
 
+/**
+ * @brief Send the prefix data byte (0xFE).
+ * 
+ * @return none
+ */
 void prefix()
 {
   write(0xFE);
 }
 
+/**
+ * @brief Turn the display ON.
+ * Display is turned ON by default.
+ * 
+ * @return none
+ */
 void displayON()
 {
   prefix();
   write(0x41);
 }
 
+/**
+ * @brief Turn the display OFF.
+ * Display is turned ON by default.
+ * 
+ * @return none
+ */
 void displayOFF()
 {
   prefix();
   write(0x42);
 }
 
+/**
+ * @brief Set the display cursor position via DDRAM address.
+ * 
+ * @param position Desired DDRAM address.
+ * @return none
+ */
 void setCursor(uint8_t position)
 {
   prefix();
   write(position);
 }
 
+/**
+ * @brief Move the cursor to line 1, column 1.
+ * 
+ * @return none
+ */
 void home()
 {
   prefix();
   write(0x46);
 }
 
+/**
+ * @brief Clear the display screen.
+ * 
+ * @return none
+ */
 void clearScreen()
 {
   prefix();
   write(0x51);
 }
 
+/**
+ * @brief Set the display's contrast.
+ * 0x00 <= contrast <= 0x32
+ * Default: 0x28
+ * 
+ * @param contrast Desired contrast setting.
+ * @return none 
+ */
 void setContrast(uint8_t contrast)
 {
   prefix();
@@ -135,6 +215,15 @@ void setContrast(uint8_t contrast)
   write(contrast);
 }
 
+/**
+ * @brief Set the display's brightness.
+ * 0x01 <= brightness <= 0x08
+ * brightness = 0x01 | Backlight OFF
+ * brightness = 0x08 | Backlight ON (100%)
+ * 
+ * @param brightness Desired brightness setting.
+ * @return none
+ */
 void setBrightness(uint8_t brightness)
 {
   prefix();
@@ -142,6 +231,11 @@ void setBrightness(uint8_t brightness)
   write(brightness);
 }
 
+/**
+ * @brief Turn the underline cursor ON.
+ * 
+ * @return none
+ */
 void underlineCursorON()
 {
   prefix();
