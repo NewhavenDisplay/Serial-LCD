@@ -132,3 +132,9 @@ void setBrightness(uint8_t brightness)
   write(0x53);
   write(brightness);
 }
+
+void underlineCursorON()
+{
+  prefix();
+  write(0x47);
+}
