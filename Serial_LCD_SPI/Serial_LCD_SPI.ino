@@ -1,15 +1,30 @@
+//---------------------------------------------------------
+/*
+Serial_LCD_SPI.ino
+This code was written to interface and Arduino UNO via SPI with NHD-0420D3Z-FL-GBW-V3.
 
-/**
- * This code was written to interface via SPI with NHD-0420D3Z-FL-GBW-V3.
- * 
- * Wiring Reference:
- * 
- * SCL to LCD J2 Pin 3
- * SDI (MOSI) to LCD J2 Pin 4
- * /CS to LCD J2 Pin 1
- * GND to LCD J2 Pin 5
- * 5V to LCD J2 Pin 6
- */
+(c)2021 Cody Johnson - Newhaven Display International, LLC.
+
+        This program is free software; you can redistribute it and/or modify
+        it under the terms of the GNU General Public License as published by
+        the Free Software Foundation; either version 2 of the License, or
+        (at your option) any later version.
+
+        This program is distributed in the hope that it will be useful,
+        but WITHOUT ANY WARRANTY; without even the implied warranty of
+        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+        GNU General Public License for more details.
+
+Wiring Reference:
+
+SCL to LCD J2 Pin 3
+SDI (MOSI) to LCD J2 Pin 4
+/CS to LCD J2 Pin 1
+GND to LCD J2 Pin 5
+5V to LCD J2 Pin 6
+
+*/
+//---------------------------------------------------------
 
 #include <stdint.h>
 
@@ -20,7 +35,6 @@ uint8_t _CS; // 3
 void setup() 
 {
   initLCD(5, 4, 3);
-  underlineCursorON();
   writeString((unsigned char*)"Newhaven");
 }
 
