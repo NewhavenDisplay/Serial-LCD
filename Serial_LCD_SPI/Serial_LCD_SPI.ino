@@ -22,8 +22,8 @@ void setup()
   Serial.begin(9600);
 
   initLCD(5, 4, 3);
-  write('A');
-  
+  underlineCursorON();
+  writeString((unsigned char*)"Newhaven");
 }
 
 void loop() 
@@ -68,6 +68,15 @@ void write(uint8_t data)
   clearCS();
   putData(data);
   setCS();
+}
+
+void writeString(unsigned char* data)
+{
+  while(*data != '\0')
+  {
+    write(*data);
+    data++;
+  }
 }
 
 void putData(uint8_t data)
