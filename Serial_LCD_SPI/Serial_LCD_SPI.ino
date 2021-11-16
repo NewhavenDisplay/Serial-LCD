@@ -1,31 +1,17 @@
 
 /**
- * This code was written to interface via SPI with NHD-C0216CS-FSW-FBW-3V3.
+ * This code was written to interface via SPI with NHD-0420D3Z-FL-GBW-V3.
  * 
  * Wiring Reference:
  * 
- * SCL to OLED 7
- * RS to OLED 6
- * SDI (MOSI) to 
- * /CS to 
- */
-
-/**
- * TODO:
- * - CGRAM (customer character)
+ * SCL to LCD J2 Pin 3
+ * SDI (MOSI) to LCD J2 Pin 4
+ * /CS to LCD J2 Pin 1
+ * GND to LCD J2 Pin 5
+ * 5V to LCD J2 Pin 6
  */
 
 #include <stdint.h>
-
-#define FUNTION_SET 0x20
-#define DATA_8BIT 0x10
-#define DATA_4BIT 0x00
-#define LINES_2 0x08
-#define LINES_1 0x00
-#define DOUBLEHEIGHT_ON 0x04
-#define DOUBLEHEIGHT_OFF 0x00
-#define EXTENDED_INSTRUCTION_TABLE_ON 0x01
-#define EXTENDED_INSTRUCTION_TABLE_OFF 0x00
 
 uint8_t _SCL; // 5
 uint8_t _SDI; // 4
@@ -80,9 +66,7 @@ void clearCS()
 void write(uint8_t data)
 {
   clearCS();
-  
   putData(data);
-  
   setCS();
 }
 
@@ -92,6 +76,7 @@ void putData(uint8_t data)
   for(int i = 7; i >= 0; i--)
   {
     digitalWrite(_SCL, LOW);
+
     digitalWrite(_SDI, (data >> i) & 0x01);
     
     delayMicroseconds(1);
