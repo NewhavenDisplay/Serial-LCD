@@ -38,6 +38,8 @@ GND to LCD J1 Pin 2
 
 #include <stdint.h>
 
+#define STARTUP_DELAY 100
+
 #define RS232_DELAY 100
 
 #define I2C_DELAY 100
@@ -64,14 +66,12 @@ Interface interface;
 
 void setup() 
 {
-  Serial.begin(9600);
-
   initLCD_I2C(5, 4);
   //initLCD_SPI(5, 4, 3);
   //initLCD_RS232(2);
 
-  write('A');
-  //writeString((unsigned char*)"Newhaven");
+  //write('A');
+  writeString((unsigned char*)"Newhaven");
 }
 
 void loop() 
@@ -92,9 +92,9 @@ void initLCD_I2C(uint8_t SCL, uint8_t SDA)
   digitalWrite(SCL, HIGH);
   digitalWrite(SDA, HIGH);
   
-  delay(500);
+  delay(STARTUP_DELAY);
 
-  //clearScreen();
+  clearScreen();
 }
 
 /**
@@ -124,7 +124,7 @@ void initLCD_SPI(uint8_t SCL, uint8_t SDI, uint8_t CS)
   digitalWrite(SCL, HIGH);
 
   // Wait for display to power ON.
-  delay(500);
+  delay(STARTUP_DELAY);
 
   clearScreen();
 }
@@ -138,7 +138,7 @@ void initLCD_RS232(uint8_t RX)
   pinMode(RX, OUTPUT);
   digitalWrite(RX, HIGH);
 
-  delay(500);
+  delay(STARTUP_DELAY);
   clearScreen();
 }
 
@@ -232,9 +232,6 @@ uint8_t getACK()
 
   pinMode(_SDA, OUTPUT);
   clearSCL();
-
-  Serial.print("ACK: ");
-  Serial.println(ACK);
 
   return ACK;
 }
