@@ -20,18 +20,26 @@ This code was written to interface and Arduino UNO with NHD-0420D3Z-FL-GBW-V3.
 
 //---------------------------------------------------------
 /*
+I2C Wiring Reference:
+
+- Arduino Pin 5 (SCL) to LCD J2 Pin 3
+- Arduino Pin 4 (SDA) to LCS J2 Pin 4
+- GND to LCD J2 Pin 5
+- 5V to LCD J2 Pin 6
+
 SPI Wiring Reference:
 
-Arduino Pin 5 (SCL) to LCD J2 Pin 3
-Arduino Pin 4 (SDI) to LCD J2 Pin 4
-Arduino Pin 3 (/CS) to LCD J2 Pin 1
-GND to LCD J2 Pin 5
-5V to LCD J2 Pin 6
+- Arduino Pin 5 (SCL) to LCD J2 Pin 3
+- Arduino Pin 4 (SDI) to LCD J2 Pin 4
+- Arduino Pin 3 (/CS) to LCD J2 Pin 1
+- GND to LCD J2 Pin 5
+- 5V to LCD J2 Pin 6
 
 RS232 Wiring Reference:
-Arduino Pin 2 (TX) to LCD J1 Pin 1
-GND to LCD J1 Pin 2
-5V to LCD J1 Pin 3
+
+- Arduino Pin 2 (TX) to LCD J1 Pin 1
+- GND to LCD J1 Pin 2
+- 5V to LCD J1 Pin 3
 
 */
 //---------------------------------------------------------
