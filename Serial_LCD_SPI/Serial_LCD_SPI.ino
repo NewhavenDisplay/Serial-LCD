@@ -17,9 +17,9 @@ This code was written to interface and Arduino UNO via SPI with NHD-0420D3Z-FL-G
 
 Wiring Reference:
 
-SCL to LCD J2 Pin 3
-SDI (MOSI) to LCD J2 Pin 4
-/CS to LCD J2 Pin 1
+Arduino Pin 5 (SCL) to LCD J2 Pin 3
+Arduino Pin 4 (SDI) to LCD J2 Pin 4
+Arduino Pin 3 (/CS) to LCD J2 Pin 1
 GND to LCD J2 Pin 5
 5V to LCD J2 Pin 6
 
