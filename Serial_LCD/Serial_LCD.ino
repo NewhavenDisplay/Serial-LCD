@@ -40,11 +40,19 @@ GND to LCD J1 Pin 2
 
 #define RS232_DELAY 100
 
+#define I2C_DELAY 100
+#define SLAVE_ADDRESS 0x28
+
+// SPI Interface
 uint8_t _SCL; // 5
 uint8_t _SDI; // 4
 uint8_t _CS; // 3
 
+// RS232 Interface
 uint8_t _RX; // 2
+
+//I2C Interface
+uint8_t _SDA; // 4
 
 enum Interface{
   I2C,
@@ -56,14 +64,37 @@ Interface interface;
 
 void setup() 
 {
+  Serial.begin(9600);
+
+  initLCD_I2C(5, 4);
   //initLCD_SPI(5, 4, 3);
-  initLCD_RS232(2);
-  writeString((unsigned char*)"Newhaven");
+  //initLCD_RS232(2);
+
+  write('A');
+  //writeString((unsigned char*)"Newhaven");
 }
 
 void loop() 
 {
 
+}
+
+void initLCD_I2C(uint8_t SCL, uint8_t SDA)
+{
+  interface = I2C;
+
+  _SCL = SCL;
+  _SDA = SDA;
+
+  pinMode(SCL, OUTPUT);
+  pinMode(SDA, OUTPUT);
+  
+  digitalWrite(SCL, HIGH);
+  digitalWrite(SDA, HIGH);
+  
+  delay(500);
+
+  //clearScreen();
 }
 
 /**
@@ -145,6 +176,69 @@ void stopBit()
   delayMicroseconds(RS232_DELAY);
 }
 
+void startCondition()
+{
+  clearSDA();
+  clearSCL();
+}
+
+void stopCondition()
+{
+  setSCL();
+  setSDA();
+}
+
+void setSDA()
+{
+  digitalWrite(_SDA, HIGH);
+  delayMicroseconds(I2C_DELAY);
+}
+
+void clearSDA()
+{
+  digitalWrite(_SDA, LOW);
+  delayMicroseconds(I2C_DELAY);
+}
+
+void setSCL()
+{
+  digitalWrite(_SCL, HIGH);
+  delayMicroseconds(I2C_DELAY);
+}
+
+void clearSCL()
+{
+  digitalWrite(_SCL, LOW);
+  delayMicroseconds(I2C_DELAY);
+}
+
+void setWriteMode()
+{
+  //putData_I2C((SLAVE_ADDRESS << 1) | 0x00);
+  putData_I2C(0x50);
+}
+
+void setReadMode()
+{
+  putData_I2C((SLAVE_ADDRESS << 1) | 0x01);
+}
+
+uint8_t getACK()
+{
+  pinMode(_SDA, INPUT);
+  setSCL();
+
+  uint8_t ACK = digitalRead(_SDA);
+
+  pinMode(_SDA, OUTPUT);
+  clearSCL();
+
+  Serial.print("ACK: ");
+  Serial.println(ACK);
+
+  return ACK;
+}
+
 /**
  * @brief Write 1 byte of data to the display.
  * 
@@ -156,6 +250,10 @@ void write(uint8_t data)
   switch(interface)
   {
     case I2C:
+      startCondition();
+      setWriteMode();
+      putData_I2C(data);
+      stopCondition();
       break;
     case SPI:
       clearCS();
@@ -187,6 +285,19 @@ void writeString(unsigned char* data)
     write(*data);
     data++; // Increment pointer.
   }
+}
+
+void putData_I2C(uint8_t data)
+{
+  for(int i = 7; i >= 0; i--)
+  {
+    digitalWrite(_SDA, (data >> i) & 0x01);
+
+    setSCL();
+    clearSCL();
+  }
+
+  getACK();
 }
 
 /**
