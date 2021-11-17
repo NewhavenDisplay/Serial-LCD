@@ -1,7 +1,7 @@
 //---------------------------------------------------------
 /*
-Serial_LCD_SPI.ino
-This code was written to interface and Arduino UNO via SPI with NHD-0420D3Z-FL-GBW-V3.
+Serial_LCD.ino
+This code was written to interface and Arduino UNO with NHD-0420D3Z-FL-GBW-V3.
 
 (c)2021 Cody Johnson - Newhaven Display International, LLC.
 
@@ -14,8 +14,13 @@ This code was written to interface and Arduino UNO via SPI with NHD-0420D3Z-FL-G
         but WITHOUT ANY WARRANTY; without even the implied warranty of
         MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
         GNU General Public License for more details.
+*/
+//---------------------------------------------------------
 
-Wiring Reference:
+
+//---------------------------------------------------------
+/*
+SPI Wiring Reference:
 
 Arduino Pin 5 (SCL) to LCD J2 Pin 3
 Arduino Pin 4 (SDI) to LCD J2 Pin 4
@@ -23,18 +28,36 @@ Arduino Pin 3 (/CS) to LCD J2 Pin 1
 GND to LCD J2 Pin 5
 5V to LCD J2 Pin 6
 
+RS232 Wiring Reference:
+Arduino Pin 2 (TX) to LCD J1 Pin 1
+GND to LCD J1 Pin 2
+5V to LCD J1 Pin 3
+
 */
 //---------------------------------------------------------
 
 #include <stdint.h>
 
+#define RS232_DELAY 100
+
 uint8_t _SCL; // 5
 uint8_t _SDI; // 4
 uint8_t _CS; // 3
 
+uint8_t _RX; // 2
+
+enum Interface{
+  I2C,
+  SPI,
+  RS232
+};
+
+Interface interface;
+
 void setup() 
 {
-  initLCD(5, 4, 3);
+  //initLCD_SPI(5, 4, 3);
+  initLCD_RS232(2);
   writeString((unsigned char*)"Newhaven");
 }
 
@@ -52,8 +75,9 @@ void loop()
  * @param CS Chip/Slave select pin assignment.
  * @return none
  */
-void initLCD(uint8_t SCL, uint8_t SDI, uint8_t CS)
+void initLCD_SPI(uint8_t SCL, uint8_t SDI, uint8_t CS)
 {
+  interface = SPI;
   // Store pin assignments globally
   _SCL = SCL;
   _SDI = SDI;
@@ -71,6 +95,19 @@ void initLCD(uint8_t SCL, uint8_t SDI, uint8_t CS)
   // Wait for display to power ON.
   delay(500);
 
+  clearScreen();
+}
+
+void initLCD_RS232(uint8_t RX)
+{
+  interface = RS232;
+
+  _RX = RX;
+
+  pinMode(RX, OUTPUT);
+  digitalWrite(RX, HIGH);
+
+  delay(500);
   clearScreen();
 }
 
@@ -96,6 +133,18 @@ void clearCS()
   delay(1);
 }
 
+void startBit()
+{
+  digitalWrite(_RX, LOW);
+  delayMicroseconds(RS232_DELAY);
+}
+
+void stopBit()
+{
+  digitalWrite(_RX, HIGH);
+  delayMicroseconds(RS232_DELAY);
+}
+
 /**
  * @brief Write 1 byte of data to the display.
  * 
@@ -104,9 +153,24 @@ void clearCS()
  */
 void write(uint8_t data)
 {
-  clearCS();
-  putData(data);
-  setCS();
+  switch(interface)
+  {
+    case I2C:
+      break;
+    case SPI:
+      clearCS();
+      putData_SPI(data);
+      setCS();
+      break;
+    case RS232:
+      startBit();
+      putData_RS232(data);
+      stopBit();
+      delay(1);
+      break;
+    default:
+      break;
+  }
 }
 
 /**
@@ -126,13 +190,13 @@ void writeString(unsigned char* data)
 }
 
 /**
- * @brief Put each bit of data on the data bus.
+ * @brief Put each bit of data on the SPI data bus.
  * This function sends MSB (D7) first and LSB (D0) last.
  * 
- * @param data Byte of data to be put on the data bus.
+ * @param data Byte of data to be put on the SPI data bus.
  * @return none
  */
-void putData(uint8_t data)
+void putData_SPI(uint8_t data)
 {
   // Write data byte MSB first -> LSB last
   for(int i = 7; i >= 0; i--)
@@ -143,6 +207,23 @@ void putData(uint8_t data)
     
     delayMicroseconds(1);
     digitalWrite(_SCL, HIGH);
+  }
+}
+
+/**
+ * @brief Put each bit of data on the RS232 data bus.
+ * This function sends LSB (D0) first and MSB (D7) last.
+ * 
+ * @param data Byte of data to be put on the RS232 data bus.
+ * @return none
+ */
+void putData_RS232(uint8_t data)
+{
+  // Write data byte LSB first -> MSB last
+  for(int i = 0; i <= 7; i++)
+  {
+    digitalWrite(_RX, (data >> i) & 0x01);
+    delayMicroseconds(RS232_DELAY);
   }
 }
 
