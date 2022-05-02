@@ -45,8 +45,9 @@ RS232 Wiring Reference:
 //---------------------------------------------------------
 
 #include <stdint.h>
+#include <stdlib.h>
 
-#define STARTUP_DELAY 100
+#define STARTUP_DELAY 500
 
 #define RS232_DELAY 100
 
@@ -74,12 +75,12 @@ Interface interface;
 
 void setup() 
 {
-  initLCD_I2C(5, 4);
-  //initLCD_SPI(5, 4, 3);
+  //initLCD_I2C(5, 4);
+  initLCD_SPI(5, 4, 3);
   //initLCD_RS232(2);
 
-  //write('A');
-  writeString((unsigned char*)"Newhaven");
+  writeString((unsigned char*)"Newhaven ");
+  //setBrightness(8);
 }
 
 void loop() 
@@ -274,6 +275,7 @@ void write(uint8_t data)
     default:
       break;
   }
+  delayMicroseconds(150);
 }
 
 /**
@@ -386,6 +388,7 @@ void displayOFF()
 void setCursor(uint8_t position)
 {
   prefix();
+  write(0x45);
   write(position);
 }
 
@@ -409,6 +412,7 @@ void clearScreen()
 {
   prefix();
   write(0x51);
+  delay(2);
 }
 
 /**

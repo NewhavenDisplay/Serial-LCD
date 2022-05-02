@@ -75,12 +75,12 @@ void clearSCL()
 
 void setWriteMode()
 {
-  putData((SLAVE_ADDRESS << 1) & 0x00);
+  putData((SLAVE_ADDRESS << 1) | 0x00);
 }
 
 void setReadMode()
 {
-  putData((SLAVE_ADDRESS << 1) & 0x01);
+  putData((SLAVE_ADDRESS << 1) | 0x01);
 }
 
 uint8_t getACK()
