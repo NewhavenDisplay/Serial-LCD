@@ -71,7 +71,7 @@ enum Interface{
   RS232
 };
 
-Interface interface;
+Interface _interface;
 
 void setup() 
 {
@@ -90,7 +90,7 @@ void loop()
 
 void initLCD_I2C(uint8_t SCL, uint8_t SDA)
 {
-  interface = I2C;
+  _interface = I2C;
 
   _SCL = SCL;
   _SDA = SDA;
@@ -117,7 +117,7 @@ void initLCD_I2C(uint8_t SCL, uint8_t SDA)
  */
 void initLCD_SPI(uint8_t SCL, uint8_t SDI, uint8_t CS)
 {
-  interface = SPI;
+  _interface = SPI;
   // Store pin assignments globally
   _SCL = SCL;
   _SDI = SDI;
@@ -140,7 +140,7 @@ void initLCD_SPI(uint8_t SCL, uint8_t SDI, uint8_t CS)
 
 void initLCD_RS232(uint8_t RX)
 {
-  interface = RS232;
+  _interface = RS232;
 
   _RX = RX;
 
@@ -253,7 +253,7 @@ uint8_t getACK()
  */
 void write(uint8_t data)
 {
-  switch(interface)
+  switch(_interface)
   {
     case I2C:
       startCondition();
