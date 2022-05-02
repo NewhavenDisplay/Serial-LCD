@@ -1,48 +1,48 @@
-//---------------------------------------------------------
-/*
-Serial_LCD.ino
-This code was written to interface and Arduino UNO with NHD-0420D3Z-FL-GBW-V3.
-
-(c)2021 Cody Johnson - Newhaven Display International, LLC.
-
-        This program is free software; you can redistribute it and/or modify
-        it under the terms of the GNU General Public License as published by
-        the Free Software Foundation; either version 2 of the License, or
-        (at your option) any later version.
-
-        This program is distributed in the hope that it will be useful,
-        but WITHOUT ANY WARRANTY; without even the implied warranty of
-        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-        GNU General Public License for more details.
-*/
-//---------------------------------------------------------
+/***********************************************************
+ * Serial_LCD.ino
+ * This code was written to interface and Arduino UNO with NHD-0420D3Z-FL-GBW-V3.
+ * 
+ * (c)2022 Cody Johnson - Newhaven Display International, LLC.
+ * 
+ *    This program is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ ***********************************************************/
 
 
-//---------------------------------------------------------
-/*
-I2C Wiring Reference:
+/**
+ * I2C Wiring Reference:
+ * 
+ * - Arduino Pin 5 (SCL) to LCD J2 Pin 3 (SCL)
+ * - Arduino Pin 4 (SDA) to LCS J2 Pin 4 (SDA)
+ * - GND to LCD J2 Pin 5 (VSS)
+ * - 5V to LCD J2 Pin 6 (VDD)
+ */
 
-- Arduino Pin 5 (SCL) to LCD J2 Pin 3
-- Arduino Pin 4 (SDA) to LCS J2 Pin 4
-- GND to LCD J2 Pin 5
-- 5V to LCD J2 Pin 6
+/**
+ * SPI Wiring Reference:
+ * 
+ * - Arduino Pin 5 (SCL) to LCD J2 Pin 3 (SCK)
+ * - Arduino Pin 4 (SDI) to LCD J2 Pin 4 (SDI)
+ * - Arduino Pin 3 (/CS) to LCD J2 Pin 1 (SPISS)
+ * - GND to LCD J2 Pin 5 (VSS)
+ * - 5V to LCD J2 Pin 6 (VDD)
+ */
 
-SPI Wiring Reference:
-
-- Arduino Pin 5 (SCL) to LCD J2 Pin 3
-- Arduino Pin 4 (SDI) to LCD J2 Pin 4
-- Arduino Pin 3 (/CS) to LCD J2 Pin 1
-- GND to LCD J2 Pin 5
-- 5V to LCD J2 Pin 6
-
-RS232 Wiring Reference:
-
-- Arduino Pin 2 (TX) to LCD J1 Pin 1
-- GND to LCD J1 Pin 2
-- 5V to LCD J1 Pin 3
-
-*/
-//---------------------------------------------------------
+/**
+ * RS232 Wiring Reference:
+ * 
+ * - Arduino Pin 2 (TX) to LCD J1 Pin 1 (RX)
+ * - GND to LCD J1 Pin 2 (VSS)
+ * - 5V to LCD J1 Pin 3 (VDD)
+ * 
+ */
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -60,7 +60,7 @@ uint8_t _SDI; // 4
 uint8_t _CS; // 3
 
 // RS232 Interface
-uint8_t _RX; // 2
+uint8_t _TX; // 2
 
 //I2C Interface
 uint8_t _SDA; // 4
@@ -93,6 +93,13 @@ void loop()
 
 }
 
+/**
+ * @brief Initialize selected IO ports for I2C.
+ * 
+ * @param SCL Serial clock pin assigment.
+ * @param SDA Serial data pin assignment.
+ * @return none
+ */
 void initLCD_I2C(uint8_t SCL, uint8_t SDA)
 {
   _interface = I2C;
@@ -111,8 +118,7 @@ void initLCD_I2C(uint8_t SCL, uint8_t SDA)
 }
 
 /**
- * @brief Initialize selected IO ports, wait for the display to power ON,
- * and clear the screen.
+ * @brief Initialize selected IO ports for SPI
  * 
  * @param SCL Serial clock pin assignment.
  * @param SDI Serial data pin assignment.
@@ -141,14 +147,20 @@ void initLCD_SPI(uint8_t SCL, uint8_t SDI, uint8_t CS)
   clearScreen();
 }
 
-void initLCD_RS232(uint8_t RX)
+/**
+ * @brief Initalize selected IO ports for RS232.
+ * 
+ * @param TX Data transmit pin assignment.
+ * @return none
+ */
+void initLCD_RS232(uint8_t TX)
 {
   _interface = RS232;
 
-  _RX = RX;
+  _TX = TX;
 
-  pinMode(RX, OUTPUT);
-  digitalWrite(RX, HIGH);
+  pinMode(TX, OUTPUT);
+  digitalWrite(TX, HIGH);
 
   delay(STARTUP_DELAY);
   clearScreen();
@@ -176,64 +188,119 @@ void clearCS()
   delay(1);
 }
 
+/**
+ * @brief Clear the RX pin on the RS232 bus.
+ * 
+ * @return none
+ */
 void startBit()
 {
-  digitalWrite(_RX, LOW);
+  digitalWrite(_TX, LOW);
   delayMicroseconds(RS232_DELAY);
 }
 
+/**
+ * @brief Set the RX pin on the RS232 bus.
+ * 
+ * @return none
+ */
 void stopBit()
 {
-  digitalWrite(_RX, HIGH);
+  digitalWrite(_TX, HIGH);
   delayMicroseconds(RS232_DELAY);
 }
 
+/**
+ * @brief Send a start condition on the I2C bus.
+ * 
+ * @return none
+ */
 void startCondition()
 {
   clearSDA();
   clearSCL();
 }
 
+/**
+ * @brief Send a stop condition on the I2C bus.
+ * 
+ * @return none
+ */
 void stopCondition()
 {
   setSCL();
   setSDA();
 }
 
+/**
+ * @brief Set the SDA/SDI pin high on the I2C/SPI bus.
+ * 
+ * @return none
+ */
 void setSDA()
 {
   digitalWrite(_SDA, HIGH);
   delayMicroseconds(I2C_DELAY);
 }
 
+/**
+ * @brief Clear the SDA/SDI pin on the I2C/SPI bus.
+ * 
+ * @return none
+ */
 void clearSDA()
 {
   digitalWrite(_SDA, LOW);
   delayMicroseconds(I2C_DELAY);
 }
 
+/**
+ * @brief Set the SCL/SCK pin on the I2C/SPI bus.
+ * 
+ * @return none
+ */
 void setSCL()
 {
   digitalWrite(_SCL, HIGH);
   delayMicroseconds(I2C_DELAY);
 }
 
+/**
+ * @brief Clear the SCL/SCK pin on the I2C/SPI bus.
+ * 
+ * @return none
+ */
 void clearSCL()
 {
   digitalWrite(_SCL, LOW);
   delayMicroseconds(I2C_DELAY);
 }
 
+/**
+ * @brief Set the I2C bus to write mode.
+ * 
+ * @return none
+ */
 void setWriteMode()
 {
   putData_I2C((SLAVE_ADDRESS << 1) | 0x00);
 }
 
+/**
+ * @brief Set the I2C bus to read mode.
+ * 
+ * @return none
+ */
 void setReadMode()
 {
   putData_I2C((SLAVE_ADDRESS << 1) | 0x01);
 }
 
+/**
+ * @brief Check if an ACK/NACK was received on the I2C bus.
+ * 
+ * @return uint8_t The ACK/NACK read from the display.
+ */
 uint8_t getACK()
 {
   pinMode(_SDA, INPUT);
@@ -296,6 +363,12 @@ void writeString(unsigned char* data)
   }
 }
 
+/**
+ * @brief Clock each bit of data on the I2C bus and read ACK.
+ * 
+ * @param data Byte of data to be put on the I2C data bus.
+ * @return none
+ */
 void putData_I2C(uint8_t data)
 {
   for(int i = 7; i >= 0; i--)
@@ -342,7 +415,7 @@ void putData_RS232(uint8_t data)
   // Write data byte LSB first -> MSB last
   for(int i = 0; i <= 7; i++)
   {
-    digitalWrite(_RX, (data >> i) & 0x01);
+    digitalWrite(_TX, (data >> i) & 0x01);
     delayMicroseconds(RS232_DELAY);
   }
 }
