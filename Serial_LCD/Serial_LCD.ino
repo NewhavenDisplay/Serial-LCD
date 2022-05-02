@@ -75,12 +75,17 @@ Interface _interface;
 
 void setup() 
 {
-  //initLCD_I2C(5, 4);
-  initLCD_SPI(5, 4, 3);
+  initLCD_I2C(5, 4);
+  //initLCD_SPI(5, 4, 3);
   //initLCD_RS232(2);
 
-  writeString((unsigned char*)"Newhaven ");
-  //setBrightness(8);
+  writeString((unsigned char*)"--Newhaven Display--");
+  setCursor(0x40);
+  writeString((unsigned char*)" - 4x20 Characters");
+  setCursor(0x14);
+  writeString((unsigned char*)" - Serial LCD");
+  setCursor(0x54);
+  writeString((unsigned char*)"  -> I2C, SPI, RS232");
 }
 
 void loop() 
@@ -102,7 +107,6 @@ void initLCD_I2C(uint8_t SCL, uint8_t SDA)
   digitalWrite(SDA, HIGH);
   
   delay(STARTUP_DELAY);
-
   clearScreen();
 }
 
@@ -134,7 +138,6 @@ void initLCD_SPI(uint8_t SCL, uint8_t SDI, uint8_t CS)
 
   // Wait for display to power ON.
   delay(STARTUP_DELAY);
-
   clearScreen();
 }
 
@@ -223,8 +226,7 @@ void clearSCL()
 
 void setWriteMode()
 {
-  //putData_I2C((SLAVE_ADDRESS << 1) | 0x00);
-  putData_I2C(0x50);
+  putData_I2C((SLAVE_ADDRESS << 1) | 0x00);
 }
 
 void setReadMode()
