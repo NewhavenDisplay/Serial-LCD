@@ -220,7 +220,6 @@ void stopBit()
 {
   digitalWrite(_TX, HIGH);
   delayMicroseconds(RS232_DELAY);
-  delay(1);
 }
 
 /**
