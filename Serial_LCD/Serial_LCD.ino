@@ -220,6 +220,7 @@ void stopBit()
 {
   digitalWrite(_TX, HIGH);
   delayMicroseconds(RS232_DELAY);
+  delay(1);
 }
 
 /**
@@ -274,7 +275,10 @@ void clearSDA()
 void setSCL()
 {
   digitalWrite(_SCL, HIGH);
-  delayMicroseconds(I2C_DELAY);
+  if(_interface == I2C)
+  {
+    delayMicroseconds(I2C_DELAY);
+  }
 }
 
 /**
@@ -285,7 +289,10 @@ void setSCL()
 void clearSCL()
 {
   digitalWrite(_SCL, LOW);
-  delayMicroseconds(I2C_DELAY);
+  if(_interface == I2C)
+  {
+    delayMicroseconds(I2C_DELAY);
+  }
 }
 
 /**
@@ -351,7 +358,6 @@ void write(uint8_t data)
       startBit();
       putData_RS232(data);
       stopBit();
-      delay(1);
       break;
     default:
       break;
@@ -406,12 +412,11 @@ void putData_SPI(uint8_t data)
   // Write data byte MSB first -> LSB last
   for(int i = 7; i >= 0; i--)
   {
-    digitalWrite(_SCL, LOW);
+    clearSCL();
 
     digitalWrite(_SDI, (data >> i) & 0x01);
     
-    delayMicroseconds(1);
-    digitalWrite(_SCL, HIGH);
+    setSCL();
   }
 }
 
