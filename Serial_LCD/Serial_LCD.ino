@@ -2,6 +2,12 @@
  * Serial_LCD.ino
  * This code was written to interface and Arduino UNO with NHD-0420D3Z-FL-GBW-V3.
  * 
+ * Program Loop:
+ * 1. Write "--Newhaven Display--" on line 1
+ * 2. Write " - 4x20  Characters" on line 2
+ * 3. Write " - Serial LCD"
+ * 4. Write "  -> I2C, SPI, RS232"
+ * 
  * (c)2022 Cody Johnson - Newhaven Display International, LLC.
  * 
  *    This program is free software; you can redistribute it and/or modify
@@ -14,7 +20,6 @@
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
  ***********************************************************/
-
 
 /**
  * I2C Wiring Reference:
@@ -41,7 +46,6 @@
  * - Arduino Pin 2 (TX) to LCD J1 Pin 1 (RX)
  * - GND to LCD J1 Pin 2 (VSS)
  * - 5V to LCD J1 Pin 3 (VDD)
- * 
  */
 
 #include <stdint.h>
@@ -104,15 +108,19 @@ void initLCD_I2C(uint8_t SCL, uint8_t SDA)
 {
   _interface = I2C;
 
+  // Store pin assigmnents globally
   _SCL = SCL;
   _SDA = SDA;
 
+  // Set IO modes
   pinMode(SCL, OUTPUT);
   pinMode(SDA, OUTPUT);
   
+  // Set starting pin states
   digitalWrite(SCL, HIGH);
   digitalWrite(SDA, HIGH);
   
+  // Wait for display to power ON
   delay(STARTUP_DELAY);
   clearScreen();
 }
@@ -128,6 +136,7 @@ void initLCD_I2C(uint8_t SCL, uint8_t SDA)
 void initLCD_SPI(uint8_t SCL, uint8_t SDI, uint8_t CS)
 {
   _interface = SPI;
+
   // Store pin assignments globally
   _SCL = SCL;
   _SDI = SDI;
@@ -142,7 +151,7 @@ void initLCD_SPI(uint8_t SCL, uint8_t SDI, uint8_t CS)
   digitalWrite(CS, HIGH);
   digitalWrite(SCL, HIGH);
 
-  // Wait for display to power ON.
+  // Wait for display to power ON
   delay(STARTUP_DELAY);
   clearScreen();
 }
@@ -157,11 +166,14 @@ void initLCD_RS232(uint8_t TX)
 {
   _interface = RS232;
 
+  // Store pin assignments globally
   _TX = TX;
 
+  // Set IO modes
   pinMode(TX, OUTPUT);
   digitalWrite(TX, HIGH);
 
+  // Wait for display to power ON
   delay(STARTUP_DELAY);
   clearScreen();
 }
