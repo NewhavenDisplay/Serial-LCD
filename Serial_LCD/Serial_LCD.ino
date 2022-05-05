@@ -79,7 +79,7 @@ Interface _interface;
 
 void setup() 
 { 
-  // Uncommend desired interface. Currently configured for SPI.
+  // Uncomment desired interface. Currently configured for SPI.
   //initLCD_I2C(5, 4);
   initLCD_SPI(5, 4, 3);
   //initLCD_RS232(2);
