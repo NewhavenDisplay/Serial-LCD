@@ -79,13 +79,13 @@ Interface _interface;
 
 void setup() 
 {
-  initLCD_I2C(5, 4);
-  //initLCD_SPI(5, 4, 3);
+  //initLCD_I2C(5, 4);
+  initLCD_SPI(5, 4, 3);
   //initLCD_RS232(2);
 
-  writeString((unsigned char*)"--Newhaven Display--");
+  writeString((unsigned char*)"Newhaven Display----");
   setCursor(0x40);
-  writeString((unsigned char*)" - 4x20 Characters");
+  writeString((unsigned char*)" - Character LCD");
   setCursor(0x14);
   writeString((unsigned char*)" - Serial LCD");
   setCursor(0x54);
