@@ -8,7 +8,7 @@
  * 3. Write " - Serial LCD"
  * 4. Write "  -> I2C, SPI, RS232"
  * 
- * (c)2022 Cody Johnson - Newhaven Display International, LLC.
+ * (c)2022 Newhaven Display International, LLC.
  * 
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -78,7 +78,8 @@ enum Interface{
 Interface _interface;
 
 void setup() 
-{
+{ 
+  // Uncommend desired interface. Currently configured for SPI.
   //initLCD_I2C(5, 4);
   initLCD_SPI(5, 4, 3);
   //initLCD_RS232(2);
