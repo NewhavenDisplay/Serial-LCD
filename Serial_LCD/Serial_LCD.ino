@@ -1,24 +1,24 @@
 /***********************************************************
  * Serial_LCD.ino
- * This code was written to interface and Arduino UNO with NHD-0420D3Z-FL-GBW-V3.
+ * This code was written to interface and Arduino UNO with NHD serial LCDs.
  * 
  * Program Loop:
- * 1. Write "--Newhaven Display--" on line 1
+ * 1. Write "Newhaven Display--" on line 1
  * 2. Write " - 4x20  Characters" on line 2
  * 3. Write " - Serial LCD"
  * 4. Write "  -> I2C, SPI, RS232"
  * 
  * (c)2022 Cody Johnson - Newhaven Display International, LLC.
  * 
- *    This program is free software; you can redistribute it and/or modify
- *    it under the terms of the GNU General Public License as published by
- *    the Free Software Foundation; either version 2 of the License, or
- *    (at your option) any later version.
- *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    GNU General Public License for more details.
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ 
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
  ***********************************************************/
 
 /**
